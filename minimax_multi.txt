@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Legal</title>
+  <title>MinimaxMulti</title>
   <script type='text/javascript' src='/epilog/javascript/epilog.js'></script>
   <script type='text/javascript' src='../javascript/localstorage.js'></script>
   <script type='text/javascript' src='../interpreter/general.js'></script>
   <script type='text/javascript'>
     //==============================================================================
-    // legal.js
+    // minimax_multi.js
     //==============================================================================
 
     var role = 'robot';
@@ -36,6 +36,64 @@
       return 'ready';
     }
 
+    function maximize(state) {
+      var actions = findlegals(state, library);
+      if (actions.length===0) {
+        return 0
+      };
+      var score = 0;
+      for (var i=0; i<actions.length; i++) {
+        var newstate = simulate(actions[i], state, library);
+        var newscore = minimax(newstate);
+        if (newscore>score) {
+          score = newscore
+        }
+      };
+      return score
+    }
+
+    function minimize(state) {
+      var actions = findlegals(state,library);
+      if (actions.length===0) {
+        return 0
+      };
+      var score = 100;
+      for (var i=0; i<actions.length; i++) {
+        var newstate = simulate(actions[i], state, library);
+        var newscore = minimax(newstate);
+        if (newscore<score) {
+          score = newscore
+        }
+      };
+      return score
+    }
+
+    function minimax(state) {
+      if (findterminalp(state, library)) {
+        return findreward(role, state, library)*1;
+      };
+      var active = findcontrol(state,library);
+      if (active===role) {
+        return maximize(state)
+      };
+      return minimize(state)
+    }
+
+    function bestmove(state) {
+      var actions = findlegals(state, library);
+      var action = actions[0];
+      var score = 0;
+      for (var i = 0; i < actions.length; i++) {
+        var newstate = simulate(actions[i], state, library);
+        var result = minimax(newstate);
+        if (result > score) {
+          score = result;
+          action = actions[i];
+        };
+      };
+      return action
+    }
+
     function play(move) {
       if (move !== nil) {
         state = simulate(move, state, library);
@@ -43,7 +101,7 @@
       if (findcontrol(state, library) !== role) {
         return false;
       };
-      return findlegalx(state, library);
+      return bestmove(state)
     }
 
     function stop(move) {
@@ -59,7 +117,7 @@
     //==============================================================================
 
     var manager = 'manager';
-    var player = 'legal';
+    var player = 'minimaxmulti';
 
     //==============================================================================
     // End of Customization
@@ -96,8 +154,8 @@
                       <td>
                         Protocol: localstorage<br/>
                         Metagamer: none<br/>
-                        Strategy: legal<br/>
-                        Identifier: <span id='player'>legal</span> <img src="http://gamemaster.stanford.edu/images/pencil.gif" onclick='doplayer()'/>
+                        Strategy: minimaxmulti<br/>
+                        Identifier: <span id='player'>minimaxmulti</span> <img src="http://gamemaster.stanford.edu/images/pencil.gif" onclick='doplayer()'/>
                       </td>
                     </tr>
                   </table>
