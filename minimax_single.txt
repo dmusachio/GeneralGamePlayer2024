@@ -36,11 +36,22 @@
       return 'ready';
     }
 
+    function shuffle (array) {
+      for (var i = array.length-1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp
+      };
+      return array
+    }
+
     function maxscore(state) {
       if (findterminalp(state, library)) {
-        return findreward(role, state, library);
+        return findreward(role, state, library)*1;
       };
       var actions = findlegals(state, library);
+      if (actions.length===0) {return 0};
       var score = 0;
       for (var i = 0; i < actions.length; i++) {
         var newstate = simulate(actions[i], state, library);
@@ -56,7 +67,9 @@
     }
 
     function bestmove(state) {
-      var actions = findlegals(state, library);
+      var actions = shuffle(findlegals(state, library));
+      if (actions.length===0) {return false};
+      if (actions.length===1) {return actions[0]};
       var action = actions[0];
       var score = 0;
       for (var i = 0; i < actions.length; i++) {
