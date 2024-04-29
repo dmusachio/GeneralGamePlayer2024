@@ -14,6 +14,8 @@
     var rules = [];
     var startclock = 10;
     var playclock = 10;
+    var level = 4;
+    var count = 1000;
 
     var library = [];
     var roles = [];
@@ -36,12 +38,13 @@
       return 'ready';
     }
     function depthcharge(state) {
-      if (findterminalp(state,ruleset)) {
-         return findreward(role,state,ruleset)*1};
+      if (findterminalp(state,library)) {
+         return findreward(role,state,library)*1};
       var move = seq();
       for (var i=0; i<roles.length; i++) {
            var options = findlegals(roles[i],state,library);
-           var best = randomindex(options.length);
+           console.log(options)
+           var best = Math.floor(Math.random() * options.length);
            move[i] = options[best]};
       var newstate = simulate(move,state,library);
       return depthcharge(newstate)
@@ -92,6 +95,7 @@
       var action = actions[0];
       var score = 0;
       for (var i = 0; i < actions.length; i++) {
+        console.log("action in play:", actions[i])
         var newstate = simulate(actions[i], state, library);
         var result = montecarlo(newstate);
         if (result > score) {
