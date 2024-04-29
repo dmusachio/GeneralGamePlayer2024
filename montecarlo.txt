@@ -61,7 +61,7 @@
       var score = 100;
       for (var i=0; i<actions.length; i++)
           {var newstate = simulate(actions[i],state,library);
-           var newscore = mcs(role,newstate,level);
+           var newscore = mcs(newstate,level);
            if (newscore===0) {return 0};
            if (newscore<score) {score = newscore}};
       return score}
