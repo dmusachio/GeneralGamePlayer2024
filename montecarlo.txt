@@ -35,17 +35,36 @@
       state = findinits(library);
       return 'ready';
     }
+    function depthcharge(state) {
+      if (findterminalp(state,ruleset)) {
+         return findreward(role,state,ruleset)*1};
+      var move = seq();
+      for (var i=0; i<roles.length; i++) {
+           var options = findlegals(roles[i],state,library);
+           var best = randomindex(options.length);
+           move[i] = options[best]};
+      var newstate = simulate(move,state,library);
+      return depthcharge(newstate)
+    }
 
-    function mcs (state,level)
-     {if (findterminalp(state,library))
-         {return findreward(role,state,library)*1};
+    function montecarlo(state) {
+      var total = 0;
+      for (var i=0; i<count; i++) {
+           total = total + depthcharge(state)};
+      return total/count
+    }
+
+    function mcs(state,level) {
+      if (findterminalp(state,library)) {
+          return findreward(role,state,library)*1};
       if (level>levels) {return montecarlo(state)};
       var active = findcontrol(state,library);
       if (active===role) {return maxscore(state,level+1)};
-      return minscore(state,level+1)}
+      return minscore(state,level+1)
+    }
 
-    function maxscore (state,level)
-     {var actions = findlegals(state,library);
+    function maxscore(state,level) {
+      var actions = findlegals(state,library);
       if (actions.length===0) {return 0};
       var score = 0;
       for (var i=0; i<actions.length; i++)
@@ -53,10 +72,11 @@
            var newscore = mcs(newstate,level);
            if (newscore===100) {return 100};
            if (newscore>score) {score = newscore}};
-      return score}
+      return score
+    }
 
-    function minscore (state,level)
-     {var actions = findlegals(state,library);
+    function minscore(state,level) {
+      var actions = findlegals(state,library);
       if (actions.length===0) {return 0};
       var score = 100;
       for (var i=0; i<actions.length; i++)
@@ -64,27 +84,8 @@
            var newscore = mcs(newstate,level);
            if (newscore===0) {return 0};
            if (newscore<score) {score = newscore}};
-      return score}
-
-    function depthcharge (state)
-     {if (findterminalp(state,ruleset))
-         {return findreward(role,state,ruleset)}*1;
-      var move = seq();
-      for (var i=0; i<roles.length; i++)
-          {var options = findlegals(roles[i],state,library);
-           var best = randomindex(options.length);
-           move[i] = options[best]};
-      var newstate = simulate(move,state,library);
-      return depthcharge(newstate)}
-
-    function montecarlo (state)
-     {var total = 0;
-      for (var i=0; i<count; i++)
-          {total = total + depthcharge(state)};
-      return total/count}
-
-
-
+      return score
+    }
 
     function bestmove(state) {
       var actions = findlegals(state, library);
@@ -133,7 +134,7 @@
 </head>
 <body bgcolor='#aabbbb' onload='doinitialize()'>
 <!--
-  Commentary: TODO
+  Commentary: We implemented a Montecarlo Player.
   -->
   <center>
     <table width='720' cellspacing='0' cellpadding='40' bgcolor='#ffffff'>
