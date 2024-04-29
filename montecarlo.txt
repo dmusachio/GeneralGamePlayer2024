@@ -14,8 +14,8 @@
     var rules = [];
     var startclock = 10;
     var playclock = 10;
-    var level = 4;
-    var count = 1000;
+    var level = 3;
+    var count = 10; 
 
     var library = [];
     var roles = [];
@@ -40,13 +40,9 @@
     function depthcharge(state) {
       if (findterminalp(state,library)) {
          return findreward(role,state,library)*1};
-      var move = seq();
-      for (var i=0; i<roles.length; i++) {
-           var options = findlegals(roles[i],state,library);
-           console.log(options)
-           var best = Math.floor(Math.random() * options.length);
-           move[i] = options[best]};
-      var newstate = simulate(move,state,library);
+      var actions = findlegals(state,library);
+      var randomIndex = Math.floor(Math.random() * actions.length);
+      var newstate = simulate(actions[randomIndex],state,library)
       return depthcharge(newstate)
     }
 
