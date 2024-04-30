@@ -15,7 +15,7 @@
     var startclock = 10;
     var playclock = 10;
     var level = 3;
-    var count = 10; 
+    var count = 10;
 
     var library = [];
     var roles = [];

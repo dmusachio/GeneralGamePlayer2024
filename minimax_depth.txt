@@ -59,7 +59,7 @@
       return score
     }
 
-    function minscore(state) {
+    function minscore(state, depth) {
       var actions = findlegals(state,library);
       if (actions.length===0) {
         return 0
