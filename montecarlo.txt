@@ -93,7 +93,7 @@
       for (var i = 0; i < actions.length; i++) {
         console.log("action in play:", actions[i])
         var newstate = simulate(actions[i], state, library);
-        var result = montecarlo(newstate);
+        var result = mcs(newstate, level);
         if (result > score) {
           score = result;
           action = actions[i];
