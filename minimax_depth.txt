@@ -15,6 +15,8 @@
     var startclock = 10;
     var playclock = 10;
 
+    var depth = 5;
+
     var library = [];
     var roles = [];
     var state = [];
@@ -50,7 +52,7 @@
       var score = 0;
       for (var i=0; i<actions.length; i++) {
         var newstate = simulate(actions[i], state, library);
-        var newscore = minimaxdepth(newstate, depth);
+        var newscore = minimaxdepth(newstate, depth-1);
         if (newscore===100) {return 100};
         if (newscore>score) {
           score = newscore
@@ -67,7 +69,7 @@
       var score = 100;
       for (var i=0; i<actions.length; i++) {
         var newstate = simulate(actions[i], state, library);
-        var newscore = minimaxdepth(newstate, depth);
+        var newscore = minimaxdepth(newstate, depth-1);
         if (newscore===0) {return 0};
         if (newscore<score) {
           score = newscore
@@ -80,21 +82,24 @@
       if (findterminalp(state, library)) {
         return findreward(role, state, library)*1;
       };
-      if (depth <= 0) {return mobility(state, library)};
+      if (depth <= 0) {return findreward(role,state,library)*1};
       var active = findcontrol(state,library);
       if (active===role) {
-        return maxscore(state, depth-1)
+        return maxscore(state, depth)
       };
-      return minscore(state, depth-1)
+      return minscore(state, depth)
     }
 
     function bestmove(state) {
-      var actions = findlegals(state, library);
+      var actions = shuffle(findlegals(state, library));
       var action = actions[0];
       var score = 0;
       for (var i = 0; i < actions.length; i++) {
         var newstate = simulate(actions[i], state, library);
-        var result = minimaxdepth(newstate, 10);
+        var result = minimaxdepth(newstate, depth);
+        if (result === 100) {
+          return actions[i];
+        }
         if (result > score) {
           score = result;
           action = actions[i];
@@ -119,6 +124,16 @@
 
     function abort() {
       return false;
+    }
+    
+    function shuffle (array) {
+      for (var i = array.length-1; i>0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp
+      };
+      return array;
     }
 
     //==============================================================================
