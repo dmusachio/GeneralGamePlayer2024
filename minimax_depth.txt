@@ -150,14 +150,14 @@
 </head>
 <body bgcolor='#aabbbb' onload='doinitialize()'>
 <!--
-  Commentary: We implemented a minimax bounded depth strategy. We chose this player after testing out the various players we were instructed to create.
-  It seemed like the minimaxBD was the strongest across a variety of games that had few and lots of states. When testing other players like the mobility player,
-  It seemed like the player would make non-sensical moves in the name of "mobility" so while "mobility" might be a useful heuristic in combination with others, on
-  it's own, it wasn't very good. We found that minimaxBD was superior to our simple minimax we implemented last week because now, there is a bounded depth so that
-  it doesn't keep searching super long for long game states.
+  Commentary: We implemented a minimax bounded depth strategy that incorporated mobility. We chose this player after
+  testing out the various players we were instructed to create. It seemed like the minimaxBD with mobility was the
+  strongest across a variety of games that had few and lots of states. Sometimes our player prioritized mobility over a
+  better looking move, but overall, our player performed decently well because generally, higher mobility leads to
+  better outcomes for the player (though not always). Overall, we are happy with how our player improved compared to
+  last week with the bounded depth strategy. We can now play larger state games which our previous player from last
+  week would have timed out on.
   -->
-
-
   <center>
     <table width='720' cellspacing='0' cellpadding='40' bgcolor='#ffffff'>
       <tr>
