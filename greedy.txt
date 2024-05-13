@@ -26,13 +26,17 @@
       return 'ready';
     }
 
-    function makenode(state, mover, reward) {
-        return {state: state, actions: [], children: [], mover: mover, utility: reward, visits: 0};
+    function makenode(state, mover, reward, complete) {
+        return {state: state, actions: [], children: [], mover: mover, utility: reward, visits: 0, complete:complete};
     }
 
     function subtree(move, node) {
         if (node.children.length === 0) {
-            expand(node);
+            var newstate = simulate(move,node.state,library);
+            var newmover = findcontrol(newstate,library);
+            var newscore = parseInt(findreward(role,newstate,library));
+            var newcomplete = findterminal(newstate,library);
+            return makenode(newstate,newmover,newscore,newcomplete)
         };
         for (var i = 0; i < node.actions.length; i++) {
             if (equalp(move, node.actions[i])) {
@@ -43,9 +47,6 @@
     }
 
     function process(node) {
-        if (findterminalp(node.state, library)) {
-            return true;
-        };
         if (node.children.length === 0) {
             expand(node);
         } else {
@@ -55,46 +56,64 @@
         return true;
     }
 
-    function value(utility, visits, total) {
-        var score = (utility + Math.round((1 - visits/total)*100));
-        return score;
-    }
-
     function select(node) {
-        var total = node.visits;
         var child = node.children[0];
-        var score = child.utility;
-        for (var i=1; i < node.children.length; i++) {
+        var score = -1;
+        for (var i=0; i < node.children.length; i++) {
             var newchild = node.children[i];
-            var newscore = newchild.utility;
+            if (newchild.complete) {continue};
+            var newscore = getscore(newchild, node);
             if (newscore > score) {
                 child = newchild;
                 score = newscore;
             };
         };
-        return child;
+        return child
+    }
+
+    function getscore(node, parent){
+        var exploitation = node.utility;
+        var exploration = Math.round((1 - node.visits/parent.visits)*100);
+        if (parent.mover===role) {
+            score = exploration + exploitation
+        }
+        else {
+            score = exploration - exploitation
+        };
+        return score
     }
 
     function expand(node) {
-        node.actions = findlegals(node.state, library);
+        node.actions = shuffle(findlegals(node.state, library));
         for (var i = 0; i < node.actions.length; i++) {
             var newstate = simulate(node.actions[i], node.state, library);
             var newmover = findcontrol(newstate, library);
-            var newscore = numberize(findreward(role, newstate, library));
-            node.children[i] = makenode(newstate, newmover, newscore);
+            var newscore = parseInt(findreward(role, newstate, library));
+            var newcomplete = findterminalp(newstate,library);
+            node.children[i] = makenode(newstate, newmover, newscore, newcomplete);
         };
-        return true;
+        return true
+    }
+
+    function shuffle(array) {
+        for (var i = array.length-1; i>0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp
+        };
+        return array
     }
 
     function scoremax(node) {
         var score = node.children[0].utility;
         for (var i = 1; i < node.children.length; i++) {
-            var newscore = node.children[i].utility;
+            var newscore = node.children[i].utility; 
             if (newscore > score) {
                 score = newscore;
             };
         };
-        return newscore;
+        return score;
     }
     
     function scoremin(node) {
@@ -105,7 +124,25 @@
                 score = newscore;
             };
         };
-        return newscore;
+        return score;
+    }
+
+    function checkmax(node) {
+      var flag = true;
+      for (var i = 0; i < node.children.length; i++) {
+        if (!node.children[i].complete) {flag = false; continue};
+        if (node.children[i].utility===100) {return true}
+        };
+      return flag;
+     }
+   
+   function checkmin (node) {
+    var flag = true;
+    for (var i = 0; i < node.children.length; i++) {
+      if (!node.children[i].complete) {flag = false; continue};
+      if (node.children[i].utility===0) {return true}
+      };
+      return flag;
     }
 
     function update(node) {
@@ -114,15 +151,18 @@
         } else {
             node.utility = scoremin(node);
         };
+        node.complete = (node.mover===role) ? checkmax(node) : checkmin(node);
         node.visits = node.visits + 1;
         return true;
     }
 
     function selectaction(node) {
         var action = node.actions[0];
-        var score = node.children[0].utility;
-        for (var i = 1; i < node.children.length; i++) {
+        var score = -1;
+        for (var i = 0; i < node.children.length; i++) {
             var newscore = node.children[i].utility;
+            if (node.children[i].complete && newscore===100) {return node.actions[i]};
+            if (node.children[i].complete && newscore===0) {continue};
             if (newscore > score) {
                 action = node.actions[i];
                 score = newscore;
@@ -140,8 +180,8 @@
       roles = findroles(library);
       state = findinits(library);
 
-      var reward = numberize(findreward(role, state, library));
-      tree = makenode(state, findcontrol(state, library), reward);
+      var reward = parseInt(findreward(role, state, library));
+      tree = makenode(state, findcontrol(state, library), reward, false);
       return 'ready';
     }
 
@@ -154,7 +194,7 @@
         return false;
       };
       var deadline = Date.now() + (playclock-2)*1000;
-      while (Date.now() < deadline) {
+      while (Date.now() < deadline && !tree.complete) { 
         process(tree);
       }
       return selectaction(tree);
@@ -181,6 +221,18 @@
   </script>
 </head>
 <body bgcolor='#aabbbb' onload='doinitialize()'>
+<!--
+  Commentary: we decided to implement and upload our greedy player because it 
+  performed very well in a wide variety of single player and multiplayer 
+  games. The idea of a greedy player is to represent states as nodes and to 
+  expand nodes as needed as the game goes on. The way the greedy algorithm 
+  works in our implementation is when calculating the value, we look at the 
+  utility of the node. The highest utility score (referred to as exploitation) 
+  means that this node has led to favorable outcomes for our player the most 
+  out of any node. We have found that our player is performing better on large 
+  state games, like Skirmish, also because we implemented a deadline feature 
+  that ensures that we have a move before the deadline. 
+  -->
   <center>
     <table width='720' cellspacing='0' cellpadding='40' bgcolor='#ffffff'>
       <tr>
