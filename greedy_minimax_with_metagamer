@@ -224,13 +224,7 @@
 </head>
 <body bgcolor='#aabbbb' onload='doinitialize()'>
 <!--
-  Commentary: We implemented a minimax bounded depth strategy that incorporated mobility. We chose this player after
-  testing out the various players we were instructed to create. It seemed like the minimaxBD with mobility was the
-  strongest across a variety of games that had few and lots of states. Sometimes our player prioritized mobility over a
-  better looking move, but overall, our player performed decently well because generally, higher mobility leads to
-  better outcomes for the player (though not always). Overall, we are happy with how our player improved compared to
-  last week with the bounded depth strategy. We can now play larger state games which our previous player from last
-  week would have timed out on.
+  Commentary: For this assignment, we developed a program to optimize subgoal ordering within game rules by first creating a subgoal ordering program and then extending it to remove useless subgoals and rules. The final step was integrating this optimization into the game-playing agent, which now replaces existing rules with optimized ones at the start clock. This approach aligns with theoretical concepts discussed in lectures and the optimized agent performed well in both single-player and multiplayer games, showcasing the practical benefits of efficient subgoal and rule management.
   -->
   <center>
     <table width='720' cellspacing='0' cellpadding='40' bgcolor='#ffffff'>
