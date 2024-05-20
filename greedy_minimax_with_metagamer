@@ -8,6 +8,8 @@
   <script src='http://gamemaster.stanford.edu/metagaming/optimizer.js'></script>
   <script src='http://gamemaster.stanford.edu/metagaming/materializer.js'></script>
   <script src='http://gamemaster.stanford.edu/metagaming/simplifier.js'></script>
+  <script src='http://gamemaster.stanford.edu/metagaming/grounder.js'></script>
+  <script src='http://gamemaster.stanford.edu/metagaming/symbolizer.js'></script>
   <script type='text/javascript'>
     function ping ()
  {return 'ready'}
@@ -24,6 +26,9 @@
 
       rules = simplifyrules(rules);
 
+      rules = groundrules(rules);
+
+      rules = symbolizerules(rules);
 
       library = definemorerules([],rs.slice(1));
       roles = findroles(library);
@@ -254,7 +259,7 @@
                     <tr>
                       <td>
                         Protocol: localstorage<br/>
-                        Metagamer: optimizer+materializer+simplifier<br/>
+                        Metagamer: optimizer+materializer+simplifier+grounder+symbolizer<br/>
                         Strategy: minimaxgreedy<br/>
                         Identifier: <span id='player'>team_orange</span> <img src="http://gamemaster.stanford.edu/images/pencil.gif" onclick='doplayer()'/>
                     </tr>
